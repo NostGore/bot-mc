@@ -1,8 +1,14 @@
 import json
 import os
+import traceback
 import threading
 from flask import Flask, jsonify, render_template_string, request
-from bot import Bot
+
+try:
+    from bot import Bot
+    BOT_AVAILABLE = True
+except Exception:
+    BOT_AVAILABLE = False
 
 app = Flask(__name__)
 bot = None
@@ -12,7 +18,7 @@ bot_lock = threading.Lock()
 def get_bot():
     global bot
     with bot_lock:
-        if bot is None:
+        if bot is None and BOT_AVAILABLE:
             bot = Bot()
         return bot
 
@@ -609,7 +615,12 @@ updateStatus();
 
 @app.route("/")
 def index():
-    return render_template_string(HTML)
+    return HTML, 200, {"Content-Type": "text/html; charset=utf-8"}
+
+
+@app.route("/ping")
+def ping():
+    return "pong"
 
 
 @app.route("/api/status")
@@ -638,7 +649,13 @@ def api_chat():
 
 @app.route("/api/logs")
 def api_logs():
-    return jsonify(get_bot().get_status()["logs"])
+    b = get_bot()
+    return jsonify(b.get_status()["logs"] if b else [])
+
+
+@app.route("/api/health")
+def api_health():
+    return jsonify({"ok": True, "bot_available": BOT_AVAILABLE})
 
 
 @app.route("/api/connect", methods=["POST"])
