@@ -1,0 +1,23 @@
+{
+    "server": {
+        "host": "testsmc.aternos.me",
+        "port": 31230,
+        "version": "1.16.5"
+    },
+    "bot": {
+        "username": "HolaBTP"
+    },
+    "auth": {
+        "enabled": true,
+        "password": "juanito",
+        "delay_after_join": 3,
+        "register": {
+            "enabled": true,
+            "command": "/register $password $password"
+        },
+        "login": {
+            "enabled": true,
+            "command": "/login $password"
+        }
+    }
+}
